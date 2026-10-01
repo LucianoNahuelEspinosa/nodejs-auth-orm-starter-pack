@@ -1,0 +1,48 @@
+{
+  "name": "nodejs-starter-ts-mikro-orm",
+  "version": "1.0.0",
+  "description": "TS project with aliases, ESM, ORM and Auth",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=.env src/index.ts",
+    "build": "node scripts/build.js",
+    "start": "node --env-file=.env dist/index.js",
+    "db:migration:create": "mikro-orm migration:create",
+    "db:migration:up": "mikro-orm migration:up",
+    "db:migration:down": "mikro-orm migration:down",
+    "db:migration:fresh": "mikro-orm migration:fresh",
+    "db:seed:create": "mikro-orm seeder:create",
+    "db:seed": "tsx scripts/seed.ts"
+  },
+  "keywords": [],
+  "author": "Luciano Nahuel Espinosa",
+  "license": "MIT",
+  "devDependencies": {
+    "@mikro-orm/cli": "7.2.1",
+    "@types/bcrypt": "6.0.0",
+    "@types/cookie-parser": "1.4.10",
+    "@types/cors": "2.8.19",
+    "@types/express": "5.0.6",
+    "@types/jsonwebtoken": "9.0.10",
+    "@types/node": "26.6.2",
+    "esbuild": "0.28.2",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  },
+  "dependencies": {
+    "@mikro-orm/core": "7.2.1",
+    "@mikro-orm/entity-generator": "7.2.1",
+    "@mikro-orm/mariadb": "7.2.1",
+    "@mikro-orm/migrations": "7.2.1",
+    "@mikro-orm/mysql": "7.2.1",
+    "@mikro-orm/postgresql": "7.2.1",
+    "@mikro-orm/seeder": "7.2.1",
+    "@mikro-orm/sqlite": "7.2.1",
+    "bcrypt": "6.0.0",
+    "cookie-parser": "1.4.7",
+    "cors": "2.8.6",
+    "express": "5.2.1",
+    "jsonwebtoken": "9.0.3"
+  }
+}
