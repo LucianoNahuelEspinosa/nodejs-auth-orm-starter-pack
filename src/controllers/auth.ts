@@ -14,7 +14,7 @@ class Auth {
             const { email, password } = req.body;
 
             if (!email || !password) {
-                res.status(400).send("Missign requiere fields");
+                res.status(400).send({ message: "Missing required fields" });
                 return;
             }
 

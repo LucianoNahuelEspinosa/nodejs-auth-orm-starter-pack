@@ -17,7 +17,7 @@ class User {
             });
 
             await em.flush();
-            res.status(201).json({
+            res.status(201).send({
                 id: user.id,
                 name: user.name,
                 lastName: user.lastName,
@@ -51,7 +51,7 @@ class User {
 
             await em.flush();
 
-            res.status(200).json({
+            res.status(200).send({
                 id: user.id,
                 name: user.name,
                 lastName: user.lastName,

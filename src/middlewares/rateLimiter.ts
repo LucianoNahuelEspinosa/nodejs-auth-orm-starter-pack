@@ -41,13 +41,13 @@ const rateLimiter = (options: RateLimitOptions): RequestHandler => {
         // Resolve dynamic or static values for windowMs and max
         const windowMs = typeof options.windowMs === 'function' ? options.windowMs(req) : options.windowMs;
         const max = typeof options.max === 'function' ? options.max(req) : options.max;
-        
+
         // Resolve key (defaults to IP address with safe type fallbacks)
         const xForwardedFor = req.headers['x-forwarded-for'];
         const fallbackIp = Array.isArray(xForwardedFor) ? xForwardedFor[0] : xForwardedFor;
-        
-        const key = options.keyGenerator 
-            ? options.keyGenerator(req) 
+
+        const key = options.keyGenerator
+            ? options.keyGenerator(req)
             : req.ip || fallbackIp || req.socket.remoteAddress || 'unknown';
 
         const message = options.message || 'Too many requests, please try again later.';

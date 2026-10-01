@@ -1,5 +1,6 @@
 import { Migrator } from '@mikro-orm/migrations';
 import { SeedManager } from '@mikro-orm/seeder';
+import type { Options } from '@mikro-orm/core';
 
 import { defineConfig as defineMySqlConfig } from '@mikro-orm/mysql';
 import { defineConfig as defineMariaDbConfig } from '@mikro-orm/mariadb';
@@ -8,6 +9,13 @@ import { defineConfig as defineSqliteConfig } from '@mikro-orm/sqlite';
 
 process.loadEnvFile?.('.env');
 const driver = process.env.DB_DRIVER ?? 'postgresql';
+const isProduction = process.env.NODE_ENV === 'production';
+
+const isCli = process.argv.some(arg => arg.includes('mikro-orm'));
+const isFreshCommand = process.argv.some(arg => arg.includes('fresh'));
+if (isProduction && isCli && isFreshCommand) {
+    throw new Error('❌ SECURITY: The “fresh” command deletes the entire database and is prohibited in production.');
+}
 
 const commonConfig = {
     entities: ['./dist/database/entities/**/*.js'],
@@ -26,8 +34,8 @@ const commonConfig = {
         pathTs: './src/database/seeders',
         glob: '!(*.d).{js,ts}'
     },
-    debug: process.env.NODE_ENV !== 'production'
-};
+    debug: !isProduction
+} satisfies Partial<Options>;
 
 const config =
     driver === 'mysql'
@@ -37,7 +45,7 @@ const config =
             host: process.env.DB_HOST,
             port: Number(process.env.DB_PORT ?? 3306),
             user: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
+            password: process.env.DB_PASSWORD
         })
 
         : driver === 'mariadb'

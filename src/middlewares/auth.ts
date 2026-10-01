@@ -35,18 +35,14 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
 
         if (accessToken) {
             try {
-                const payload = jwt.verify(
-                    accessToken,
-                    jwtConfig.secretKey,
-                ) as AuthTokenPayload;
-
+                const payload = jwt.verify(accessToken, jwtConfig.secretKey) as AuthTokenPayload;
                 userId = payload.id;
                 tokenFingerprint = payload.fp;
             } catch (error: unknown) {
                 if (!(error instanceof jwt.TokenExpiredError)) {
                     res.clearCookie(accessTokenName, clearCookieOptions);
                     res.clearCookie(refreshTokenName, clearCookieOptions);
-                    res.status(401).send("Invalid access token");
+                    res.status(401).send({ message: "Invalid access token" });
                     return;
                 }
             }
@@ -56,24 +52,20 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
             if (!refreshToken) {
                 res.clearCookie(accessTokenName, clearCookieOptions);
                 res.clearCookie(refreshTokenName, clearCookieOptions);
-                res.status(401).send("Session expired");
+                res.status(401).send({ message: "Session expired" });
                 return;
             }
 
             let refreshPayload: AuthTokenPayload;
 
             try {
-                refreshPayload = jwt.verify(
-                    refreshToken,
-                    jwtConfig.secretKey,
-                ) as AuthTokenPayload;
-
+                refreshPayload = jwt.verify(refreshToken, jwtConfig.secretKey) as AuthTokenPayload;
                 userId = refreshPayload.id;
                 tokenFingerprint = refreshPayload.fp;
             } catch {
                 res.clearCookie(accessTokenName, clearCookieOptions);
                 res.clearCookie(refreshTokenName, clearCookieOptions);
-                res.status(401).send("Invalid refresh token");
+                res.status(401).send({ message: "Invalid refresh token" });
                 return;
             }
 
@@ -114,7 +106,7 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
         if (!user || user.deletedAt || user.isBlocked) {
             res.clearCookie(accessTokenName, clearCookieOptions);
             res.clearCookie(refreshTokenName, clearCookieOptions);
-            res.status(401).send({ message: "Usuario no autorizado" });
+            res.status(401).send({ message: "Unauthorized user" });
             return;
         }
 

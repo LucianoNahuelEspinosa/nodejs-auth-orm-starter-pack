@@ -16,9 +16,9 @@ const app = express();
 const port = process.env.PORT || 4000;
 
 const apiLimiter = rateLimiter({
-    windowMs: 60 * 1000, // 1 Minute
-    max: 80,
-    message: 'Take it easy, wait a minute.'
+  windowMs: 60 * 1000, // 1 Minute
+  max: 250,
+  message: 'Take it easy, wait a minute.'
 });
 
 app.use(express.json({ limit: "300mb" }));
@@ -33,15 +33,36 @@ const server = createServer(app);
 app.use("/api", routes);
 app.use(errorHandler);
 
-server.listen(port, () => {
-    console.info(`Server running on port ${port}`);
+server.listen(port, async () => {
+  console.info(`Server running on port ${port}`);
+
+  try {
+    await orm.connect();
+    const isConnected = await orm.isConnected();
+
+    if (isConnected) {
+      console.log('✅ Database connection successfully established.');
+    } else {
+      console.error('❌ Failed to connect to the database.');
+    }
+  } catch (error) {
+    console.error('❌ Connection error details:', error);
+  }
 });
 
-const shutdown = async () => {
-  await orm.close(true);
-  server.close(() => {
-    process.exit(0);
-  });
+const shutdown = async (signal: string) => {
+  console.log(`Received ${signal}. Gracefully shutting down...`);
+  try {
+    await orm.close(true);
+    console.log('✅ Database connection closed.');
+    server.close(() => {
+      console.log('✅ HTTP server closed.');
+      process.exit(0);
+    });
+  } catch (error) {
+    console.error('❌ Error during graceful shutdown:', error);
+    process.exit(1);
+  }
 };
 
 process.on('SIGINT', shutdown);
