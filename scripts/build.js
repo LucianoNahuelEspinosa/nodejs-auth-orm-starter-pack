@@ -1,52 +1,15 @@
-import * as esbuild from 'esbuild';
-import { readdirSync, rmSync } from 'fs';
-import { join } from 'path';
+import { execSync } from 'child_process';
+import { rmSync } from 'fs';
 
-const getFiles = (directory) => {
-    return readdirSync(directory, {
-        recursive: true,
-    }).filter((file) => file.endsWith('.ts')).map((file) => join(directory, file));
-};
+try {
+    console.log('🚀 Starting build with SWC...');
 
-const build = async () => {
-    console.log('🚀 Starting build with esbuild...');
+    rmSync('dist', { recursive: true, force: true });
+    execSync('npx swc src -d dist --strip-leading-paths', { stdio: 'inherit' });
+    execSync('npx tsc-alias -p tsconfig.json', { stdio: 'inherit' });
 
-    try {
-        rmSync('dist', {
-            recursive: true,
-            force: true,
-        });
-        await esbuild.build({
-            entryPoints: ['src/index.ts'],
-            bundle: true,
-            minify: true,
-            format: 'esm',
-            platform: 'node',
-            target: 'node22',
-            outfile: 'dist/index.js',
-            packages: 'external',
-            alias: {
-                '@': './src',
-            },
-        });
-
-        const entityFiles = getFiles('src/database/entities');
-        await esbuild.build({
-            entryPoints: entityFiles,
-            bundle: false,
-            format: 'esm',
-            platform: 'node',
-            target: 'node22',
-            outdir: 'dist/database/entities',
-            packages: 'external',
-        });
-
-        console.log('✨ Entities generated');
-        console.log('✅ Build completed successfully');
-    } catch (error) {
-        console.error('❌ Build failed:', error);
-        process.exit(1);
-    }
-};
-
-build();
+    console.log('✅ Build completed successfully.');
+} catch (error) {
+    console.error('❌ Build failed:', error);
+    process.exit(1);
+}

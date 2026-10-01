@@ -41,7 +41,7 @@ It features built-in **JWT Authentication with HTTP-Only Cookies**, **Multi-Driv
 ```text
 .
 ├── scripts/
-│   ├── build.js             # Esbuild bundling script
+│   ├── build.js             # Build script
 │   └── seed.ts              # Dynamic auto-discovering seeder runner
 ├── src/
 │   ├── config.ts            # CORS & JWT global settings
@@ -227,7 +227,7 @@ export default router;
 | Command | Description |
 | :--- | :--- |
 | `npm run dev` | Runs the app in dev mode using `tsx watch --clear-screen=false`. |
-| `npm run build` | Compiles source files using `esbuild`. |
+| `npm run build` | Compiles source files using `SWC`. |
 | `npm start` | Executes the built application in `dist/index.js`. |
 | `npm run db:migration:create` | Generates a new migration snapshot. |
 | `npm run db:migration:up` | Executes all pending migrations. |
