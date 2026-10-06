@@ -31,13 +31,11 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
         }
 
         let userId: string | undefined;
-        let tokenFingerprint: string | undefined;
 
         if (accessToken) {
             try {
                 const payload = jwt.verify(accessToken, jwtConfig.secretKey) as AuthTokenPayload;
                 userId = payload.id;
-                tokenFingerprint = payload.fp;
             } catch (error: unknown) {
                 if (!(error instanceof jwt.TokenExpiredError)) {
                     res.clearCookie(accessTokenName, clearCookieOptions);
@@ -61,7 +59,6 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
             try {
                 refreshPayload = jwt.verify(refreshToken, jwtConfig.secretKey) as AuthTokenPayload;
                 userId = refreshPayload.id;
-                tokenFingerprint = refreshPayload.fp;
             } catch {
                 res.clearCookie(accessTokenName, clearCookieOptions);
                 res.clearCookie(refreshTokenName, clearCookieOptions);
@@ -117,7 +114,7 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
         next();
     } catch (error: unknown) {
         console.error(error);
-        res.status(500).send("Authentication error");
+        res.status(500).send({ message: "Authentication error" });
     }
 }
 
