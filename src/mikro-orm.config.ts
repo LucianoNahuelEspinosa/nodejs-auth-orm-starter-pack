@@ -6,6 +6,7 @@ import { defineConfig as defineMySqlConfig } from '@mikro-orm/mysql';
 import { defineConfig as defineMariaDbConfig } from '@mikro-orm/mariadb';
 import { defineConfig as definePostgresConfig } from '@mikro-orm/postgresql';
 import { defineConfig as defineSqliteConfig } from '@mikro-orm/sqlite';
+import { SoftDeleteSubscriber } from './database/subscribers';
 
 process.loadEnvFile?.('.env');
 const driver = process.env.DB_DRIVER ?? 'postgresql';
@@ -34,7 +35,8 @@ const commonConfig = {
         pathTs: './src/database/seeders',
         glob: '!(*.d).{js,ts}'
     },
-    debug: !isProduction
+    debug: !isProduction,
+    subscribers: [new SoftDeleteSubscriber()]
 } satisfies Partial<Options>;
 
 const config =

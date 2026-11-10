@@ -14,18 +14,44 @@ export const UserSchema = defineEntity({
         createdAt: p.datetime().fieldName('created_at').onCreate(() => new Date()),
         updatedAt: p.datetime().fieldName('updated_at').onCreate(() => new Date()).onUpdate(() => new Date()),
         deletedAt: p.datetime().fieldName('deleted_at').nullable()
+    },
+    filters: {
+        softDelete: {
+            name: 'softDelete',
+            cond: { deletedAt: null },
+            default: true
+        }
     }
 });
 
 export type IUser = InferEntity<typeof UserSchema>;
 
+const isPasswordHash = (value: string): boolean => {
+    return /^\$2[aby]\$\d{2}\$/.test(value);
+}
+
 const hashPassword = async (args: EventArgs<IUser>) => {
     const password = args.changeSet?.payload.password;
 
-    if (typeof password === 'string') {
-        args.entity.password = await bcrypt.hash(password, 12);
+    if (typeof password !== 'string') {
+        return;
+    }
+
+    if (isPasswordHash(password)) {
+        return;
+    }
+
+    args.entity.password = await bcrypt.hash(password, 12);
+}
+
+const formatEmail = (args: EventArgs<IUser>) => {
+    if (typeof args.entity.email === 'string') {
+        args.entity.email = args.entity.email.trim().toLowerCase();
     }
 }
 
 UserSchema.addHook('beforeCreate', hashPassword);
+UserSchema.addHook('beforeCreate', formatEmail);
+
 UserSchema.addHook('beforeUpdate', hashPassword);
+UserSchema.addHook('beforeUpdate', formatEmail);

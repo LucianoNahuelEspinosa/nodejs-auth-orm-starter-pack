@@ -24,7 +24,8 @@ class Auth {
                     email: String(email).toLocaleLowerCase().trim()
                 },
                 {
-                    fields: ["id", "name", "lastName", "email", "password", "isBlocked", "deletedAt"]
+                    fields: ["id", "name", "lastName", "email", "password", "isBlocked", "deletedAt"],
+                    filters: { softDelete: false }
                 }
             );
 

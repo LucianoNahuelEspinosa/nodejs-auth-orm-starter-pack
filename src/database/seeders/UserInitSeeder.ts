@@ -8,7 +8,7 @@ export class UserInitSeeder extends Seeder {
       name: 'Admin',
       lastName: 'User',
       email: 'admin@example.com',
-      password: '1234',
+      password: '1234'
     });
 
     await em.flush();

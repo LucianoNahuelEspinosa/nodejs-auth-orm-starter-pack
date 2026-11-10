@@ -61,6 +61,106 @@ class User {
             next(error);
         }
     }
+
+    block = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const em = req.em;
+            const { id } = req.params;
+
+            const user = await em.findOne(UserSchema, { id });
+            if (!user) {
+                res.status(404).json({ message: "User not found" });
+                return;
+            }
+
+            user.isBlocked = true;
+            await em.flush();
+
+            res.sendStatus(200);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    unblock = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const em = req.em;
+            const { id } = req.params;
+
+            const user = await em.findOne(UserSchema, { id });
+            if (!user) {
+                res.status(404).json({ message: "User not found" });
+                return;
+            }
+
+            user.isBlocked = false;
+            await em.flush();
+
+            res.sendStatus(200);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    delete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const em = req.em;
+            const { id } = req.params;
+
+            const user = await em.findOne(UserSchema, { id });
+            if (!user) {
+                res.status(404).json({ message: "User not found" });
+                return;
+            }
+
+            user.deletedAt = new Date();
+            await em.flush();
+
+            res.sendStatus(204);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    restore = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const em = req.em;
+            const { id } = req.params;
+
+            const user = await em.findOne(UserSchema, { id }, { filters: { softDelete: false } });
+            if (!user) {
+                res.status(404).json({ message: "User not found" });
+                return;
+            }
+
+            user.deletedAt = null;
+            await em.flush();
+
+            res.sendStatus(200);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    deleteHard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const em = req.em;
+            const { id } = req.params;
+
+            const user = await em.findOne(UserSchema, { id }, { filters: { softDelete: false } });
+            if (!user) {
+                res.status(404).json({ message: "User not found" });
+                return;
+            }
+
+            em.remove(user);
+            await em.flush();
+
+            res.sendStatus(204);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default User;
