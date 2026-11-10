@@ -28,7 +28,9 @@ const commonConfig = {
         tableName: 'mikro_orm_migrations',
         emit: 'ts' as const,
         transactional: true,
-        allOrNothing: true
+        allOrNothing: true,
+        snapshot: true,
+        snapshotName: ".snapshot-mikro-orm"
     },
     seeder: {
         path: './dist/database/seeders',
