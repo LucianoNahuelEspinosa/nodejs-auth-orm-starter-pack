@@ -5,6 +5,6 @@ export const SeederExecutionSchema = defineEntity({
     properties: {
         id: p.integer().primary().autoincrement(),
         name: p.string().unique(),
-        executedAt: p.datetime().onCreate(() => new Date())
+        executedAt: p.datetime().fieldName('executed_at').onCreate(() => new Date())
     }
 });
