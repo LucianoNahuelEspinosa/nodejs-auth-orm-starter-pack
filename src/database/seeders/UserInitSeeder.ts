@@ -8,7 +8,9 @@ export class UserInitSeeder extends Seeder {
       name: 'Admin',
       lastName: 'User',
       email: 'admin@example.com',
-      password: '1234'
+      password: '1234', // or hashed password
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
 
     await em.flush();
